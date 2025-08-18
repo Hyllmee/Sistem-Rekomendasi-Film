@@ -1,0 +1,97 @@
+{% extends 'recommender_app/base.html' %}
+{% load static %}
+
+{% block title %}Beranda Pengguna{% endblock %}
+
+{# Mengatur navbar khusus untuk halaman home user #}
+{% block navbar_content %}
+    <div class="container">
+        <a href="{% url 'home' %}" class="logo">MovieReco</a>
+        <ul class="nav-links">
+            <li><a href="{% url 'edit_profile' %}">Profil</a></li>
+            <li><a href="{% url 'logout' %}">Keluar</a></li> {# Pastikan menggunakan user_logout #}
+        </ul>
+    </div>
+{% endblock navbar_content %}
+
+
+{% block content %}
+<div class="welcome-container" style="text-align: center; margin-top: 50px; padding: 30px; background-color: white; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
+    {% if user.is_authenticated %}
+        <h1 style="color: var(--primary-color);">Selamat Datang, {{ user.username }}!</h1>
+    {% else %}
+        <h1 style="color: var(--primary-color);">Selamat Datang di Website Rekomendasi Film</h1>
+    {% endif %}
+
+    <p class="app-description" style="font-size: 1.05em; line-height: 1.7; max-width: 800px; margin-left: auto; margin-right: auto; text-align: justify; text-align-last: center;">
+        Di era digital saat ini, menemukan film yang sesuai dengan preferensi individu menjadi tantangan tersendiri karena banyaknya pilihan. Aplikasi ini hadir sebagai solusi cerdas untuk mengatasi permasalahan informasi yang melimpah dengan memanfaatkan opini dan rating pengguna lain.
+    </p>
+    <p class="app-purpose" style="font-size: 1.05em; line-height: 1.7; max-width: 800px; margin-left: auto; margin-right: auto; text-align: justify; text-align-last: center;">
+        Tujuan utama aplikasi ini adalah untuk memberikan rekomendasi film yang dipersonalisasi dan akurat berdasarkan kesamaan preferensi antar pengguna, menggunakan metode User Based Collaborative Filtering dengan Cosine Similarity. Kami berharap dapat membantu Anda menemukan film favorit baru dengan lebih cepat dan menyenangkan.
+    </p>
+
+    <h2 style="color: var(--dark-gray); margin-top: 50px; margin-bottom: 30px;">Apa yang ingin Anda lakukan?</h2>
+    <div class="user-menu-grid">
+        <a href="{% url 'daftar_film' %}" class="user-menu-card">
+            <h3>Lihat Daftar Film</h3>
+            <p>Jelajahi berbagai film yang tersedia dan berikan rating Anda.</p>
+        </a>
+        <a href="{% url 'hasil_rekomendasi' %}" class="user-menu-card">
+            <h3>Dapatkan Rekomendasi</h3>
+            <p>Lihat film yang direkomendasikan khusus untuk Anda.</p>
+        </a>
+    </div>
+</div>
+
+<style>
+    /* Tambahkan atau modifikasi CSS ini di recommender_app/static/css/style.css */
+    .user-menu-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Menggunakan auto-fit untuk responsivitas */
+        gap: 30px;
+        margin-top: 40px;
+        justify-content: center; /* Memusatkan grid jika ada ruang kosong */
+    }
+
+    .user-menu-card {
+        background-color: var(--card-bg);
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px var(--shadow);
+        text-align: center;
+        text-decoration: none;
+        color: var(--text-color);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .user-menu-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+
+    .user-menu-card h3 {
+        color: var(--primary-color);
+        margin-top: 0;
+        margin-bottom: 10px;
+        font-size: 1.5em;
+    }
+
+    .user-menu-card p {
+        font-size: 0.95em;
+        color: var(--dark-gray);
+    }
+
+    /* Override untuk navbar user di halaman beranda */
+    .navbar .container {
+        justify-content: space-between; /* Untuk memisahkan logo dan nav-links */
+    }
+
+    .nav-links {
+        margin-left: auto; /* Untuk mendorong nav-links ke kanan */
+    }
+</style>
+{% endblock %}

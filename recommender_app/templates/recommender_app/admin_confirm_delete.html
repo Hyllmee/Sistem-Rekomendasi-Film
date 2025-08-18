@@ -1,0 +1,16 @@
+{% extends 'recommender_app/admin_base.html' %}
+{% load static %}
+
+{% block title %}Konfirmasi Hapus{% endblock %}
+
+{% block admin_content %}
+<div style="background-color: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); max-width: 600px; margin: 40px auto; text-align: center;">
+    <h2>Konfirmasi Hapus {{ type }}</h2>
+    <p>Apakah Anda yakin ingin menghapus {{ type }} "{{ object.film_name|default:object.username }}"?</p>
+    <form method="post" style="display: inline-block;">
+        {% csrf_token %}
+        <button type="submit" class="btn" style="background-color: #f44336; width: auto; margin: 10px;">Ya, Hapus</button>
+    </form>
+    <a href="{% if type == 'Film' %}{% url 'admin_daftar_film' %}{% else %}{% url 'admin_daftar_user' %}{% endif %}" class="btn" style="background-color: #555; width: auto; margin: 10px;">Batal</a>
+</div>
+{% endblock %}

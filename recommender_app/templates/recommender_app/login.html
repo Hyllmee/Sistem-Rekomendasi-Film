@@ -1,0 +1,17 @@
+{% extends 'recommender_app/base.html' %}
+{% load static %}
+
+{% block title %}Masuk{% endblock %}
+
+{% block content %}
+<form method="post">
+    <h2>Masuk</h2>
+    {% csrf_token %}
+    {{ form.as_p }}
+    <div class="form-actions"> {# Tambahkan div ini untuk menampung tombol #}
+        <button type="submit" class="btn">Masuk</button>
+        <a href="{% url 'landing_page' %}" class="btn secondary-btn">Kembali</a> {# Tombol Kembali #}
+    </div>
+    <p style="text-align: center; margin-top: 20px;">Belum punya akun? <a href="{% url 'register' %}">Daftar sekarang</a></p>
+</form>
+{% endblock %}

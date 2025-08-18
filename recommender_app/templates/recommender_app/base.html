@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Sistem Rekomendasi Film{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            {% block navbar_content %} {# Ini adalah blok yang akan di-override di home.html #}
+            <div class="container">
+                <a href="{% url 'home' %}" class="logo">MovieReco</a> {# Link logo ke user home #}
+                <ul class="nav-links">
+                    {% if user.is_authenticated %}
+                        {# Menu untuk user yang sudah login, di halaman sub-menu #}
+                        {# Hanya tampilkan Profil dan Keluar di sini #}
+                        <li><a href="{% url 'edit_profile' %}">Profil</a></li>
+                        <li><a href="{% url 'logout' %}">Keluar</a></li>
+                    {% elif request.session.is_admin %}
+                        {# Menu untuk admin (akan di-override oleh admin_base.html jika extend itu) #}
+                        {# Jika tidak extend admin_base, maka akan muncul ini #}
+                        <li><a href="{% url 'admin_dashboard' %}">Dashboard Admin</a></li>
+                        <li><a href="{% url 'admin_logout' %}">Keluar Admin</a></li>
+                    {% else %}
+                        {# Menu untuk belum login (akan dikontrol oleh landing_page) #}
+                        {# Atau bisa juga tampilkan link ke landing_page jika mau #}
+                    {% endif %}
+                </ul>
+            </div>
+            {% endblock navbar_content %}
+        </nav>
+    </header>
+
+    <main class="container">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        {% block back_button %}{% endblock %} {# Blok untuk tombol kembali #}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Sistem Rekomendasi Film. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

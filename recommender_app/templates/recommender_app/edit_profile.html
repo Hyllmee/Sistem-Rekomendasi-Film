@@ -1,0 +1,13 @@
+{% extends 'recommender_app/base.html' %}
+{% load static %}
+
+{% block title %}Edit Profil{% endblock %}
+
+{% block content %}
+<form method="post">
+    <h2>Edit Profil</h2>
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Perbarui Profil</button>
+</form>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends 'recommender_app/admin_base.html' %}
+{% load static %}
+
+{% block title %}Hasil Perhitungan Prediksi{% endblock %}
+
+{% block admin_back_button %} {# <-- GUNAKAN BLOK INI #}
+<div class="back-button-container">
+    <a href="{% url 'admin_dashboard' %}" class="btn back-btn">← Kembali ke Dashboard Admin</a>
+</div>
+{% endblock %}
+
+{% block admin_content %}
+<h1>Hasil Perhitungan Prediksi Rating Film</h1>
+{% if prediction_data %}
+<table class="data-table">
+    <thead>
+        <tr>
+            <th>Nama User</th>
+            <th>Nama Film</th>
+            <th>Nilai Prediksi</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for data in prediction_data %}
+        <tr>
+            <td>{{ data.user_name }}</td>
+            <td>{{ data.film_name }}</td>
+            <td>{{ data.predicted_rating }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+    <p>Tidak ada data prediksi untuk ditampilkan. Pastikan ada cukup rating film dan film yang belum dirating oleh pengguna.</p>
+{% endif %}
+{% endblock %}

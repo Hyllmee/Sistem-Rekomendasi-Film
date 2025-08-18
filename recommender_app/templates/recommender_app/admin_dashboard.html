@@ -1,0 +1,78 @@
+{% extends 'recommender_app/admin_base.html' %}
+{% load static %}
+
+{% block title %}Dashboard Admin{% endblock %}
+
+{% block admin_content %}
+<h1>Dashboard Admin</h1>
+<p>Selamat datang di panel administrasi Sistem Rekomendasi Film. Pilih menu di bawah untuk mengelola aplikasi.</p>
+
+<div class="admin-menu-grid">
+    <a href="{% url 'admin_daftar_film' %}" class="admin-menu-card">
+        <h3>Kelola Film</h3>
+        <p>Tambah, edit, atau hapus data film.</p>
+    </a>
+    <a href="{% url 'admin_daftar_user' %}" class="admin-menu-card">
+        <h3>Kelola Pengguna</h3>
+        <p>Lihat dan kelola akun pengguna.</p>
+    </a>
+    <a href="{% url 'admin_hasil_similarity' %}" class="admin-menu-card">
+        <h3>Hasil Similarity</h3>
+        <p>Lihat perhitungan kemiripan antar pengguna.</p>
+    </a>
+    <a href="{% url 'admin_hasil_prediksi' %}" class="admin-menu-card">
+        <h3>Hasil Prediksi</h3>
+        <p>Lihat hasil prediksi rating film.</p>
+    </a>
+    <a href="{% url 'admin_evaluasi_sistem' %}" class="admin-menu-card">
+        <h3>Evaluasi Sistem</h3>
+        <p>Lihat metrik akurasi sistem (MAE, RMSE).</p>
+    </a>
+    <a href="{% url 'admin_laporan_rekomendasi' %}" class="admin-menu-card">
+        <h3>Laporan Rekomendasi</h3>
+        <p>Ringkasan rekomendasi yang dihasilkan.</p>
+    </a>
+</div>
+
+<style>
+    /* Tambahkan atau modifikasi CSS ini di recommender_app/static/css/style.css */
+    .admin-menu-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 30px;
+        margin-top: 40px;
+    }
+
+    .admin-menu-card {
+        background-color: var(--card-bg);
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px var(--shadow);
+        text-align: center;
+        text-decoration: none;
+        color: var(--text-color);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .admin-menu-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+
+    .admin-menu-card h3 {
+        color: var(--primary-color);
+        margin-top: 0;
+        margin-bottom: 10px;
+        font-size: 1.5em;
+    }
+
+    .admin-menu-card p {
+        font-size: 0.95em;
+        color: var(--dark-gray);
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,56 @@
+{# recommender_app/templates/recommender_app/detail_film.html #}
+{% extends 'recommender_app/base.html' %}
+{% load static %}
+
+{% block title %}Detail Film - {{ film.film_name }}{% endblock %}
+
+{% block back_button %}
+<div class="back-button-container">
+    <a href="{% url 'daftar_film' %}" class="btn back-btn">← Kembali ke Daftar Film</a>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="film-detail">
+    <div class="film-detail-image">
+        {% if film.image %}
+            <img src="{{ film.image }}" alt="{{ film.film_name }}">
+        {% else %}
+            <img src="{% static 'img/default_film.png' %}" alt="Default Film Image">
+        {% endif %}
+    </div>
+    <div class="film-detail-content">
+        <h1>{{ film.film_name }} {% if film.release_year %}({{ film.release_year }}){% endif %}</h1> {# Tampilkan tahun di judul #}
+
+        <p><strong>Deskripsi Film:</strong></p>
+        <ul>
+            {% if film.description %}
+                <li><strong>Genre:</strong> {{ film.description }}</li> {# Sekarang ini adalah nama genre #}
+            {% endif %}
+            {% if film.release_year %}
+                <li><strong>Tahun Rilis:</strong> {{ film.release_year }}</li>
+            {% endif %}
+            {% if film.imdb_url %}
+                <li><strong>IMDb:</strong> <a href="{{ film.imdb_url }}" target="_blank">Link IMDb</a></li>
+            {% endif %}
+            {% if film.sinopsis %}
+                <li><strong>Sinopsis:</strong> {{ film.sinopsis }}</li>
+            {% else %}
+                <li>Sinopsis tidak tersedia.</li>
+            {% endif %}
+        </ul>
+
+        <div class="rating-section">
+            {% if user_rating %}
+                <p><strong>Rating Anda:</strong> {{ user_rating }} dari 5</p>
+            {% endif %}
+            <form method="post">
+                {% csrf_token %}
+                <p><strong>Beri Rating:</strong></p>
+                {{ form.as_p }}
+                <button type="submit" class="btn">Kirim Rating</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

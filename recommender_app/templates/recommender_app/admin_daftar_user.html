@@ -1,0 +1,41 @@
+{% extends 'recommender_app/admin_base.html' %}
+{% load static %}
+
+{% block title %}Daftar User Admin{% endblock %}
+
+{% block admin_back_button %} {# <-- GUNAKAN BLOK INI #}
+<div class="back-button-container">
+    <a href="{% url 'admin_dashboard' %}" class="btn back-btn">← Kembali ke Dashboard Admin</a>
+</div>
+{% endblock %}
+
+{% block admin_content %}
+<h1>Daftar User (Admin)</h1>
+<table class="data-table">
+    <thead>
+        <tr>
+            <th>No</th>
+            <th>Nama Pengguna</th>
+            <th>Email</th>
+            <th>Aksi</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ user.username }}</td>
+            <td>{{ user.email }}</td>
+            <td>
+                <a href="{% url 'admin_edit_user' user.id %}" class="btn action-btn btn-edit">Edit</a>
+                <a href="{% url 'admin_delete_user' user.id %}" class="btn action-btn btn-delete">Delete</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4">Belum ada user terdaftar (selain admin).</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

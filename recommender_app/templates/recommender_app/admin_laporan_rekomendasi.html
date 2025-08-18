@@ -1,0 +1,42 @@
+{% extends 'recommender_app/admin_base.html' %}
+{% load static %}
+
+{% block content %}
+    <h1>Laporan Rekomendasi</h1>
+
+    {% if report_data %}
+        <h2>Hasil Prediksi</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Film</th>
+                    <th>Predicted Rating</th>
+                    <th>Actual Rating</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in report_data %}
+                    <tr>
+                        <td>{{ item.user_name }}</td>
+                        <td>{{ item.film_name }}</td>
+                        <td>{{ item.predicted_rating }}</td>
+                        <td>{{ item.actual_rating }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Tidak ada data laporan yang dihasilkan.</p>
+    {% endif %}
+
+    {% if user_similarity_df %}
+        <h2>Tabel Similaritas Pengguna</h2>
+        {{ user_similarity_df|safe }}
+    {% else %}
+        <p>Tidak ada data similaritas pengguna yang tersedia.</p>
+    {% endif %}
+
+    <p><strong>MAE:</strong> {{ mae }}</p>
+    <p><strong>RMSE:</strong> {{ rmse }}</p>
+{% endblock %}

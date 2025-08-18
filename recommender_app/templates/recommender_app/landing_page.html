@@ -1,0 +1,96 @@
+{% extends 'recommender_app/base.html' %}
+{% load static %}
+
+{% block title %}Selamat Datang{% endblock %}
+
+{# Jangan tampilkan navbar di landing page, karena ini halaman awal pilihan login #}
+{% block navbar_content %}
+    <div class="container">
+        <a href="{% url 'landing_page' %}" class="logo">MovieReco</a>
+        {# Tidak ada link navigasi di sini, hanya pilihan login di content #}
+    </div>
+{% endblock %}
+
+{% block content %}
+<div class="welcome-container">
+    <h1>Selamat Datang di Sistem Rekomendasi Film</h1>
+    <p class="app-description">
+        Di era digital saat ini, menemukan film yang sesuai dengan preferensi individu menjadi tantangan tersendiri karena banyaknya pilihan. Aplikasi ini hadir sebagai solusi cerdas untuk mengatasi permasalahan informasi yang melimpah dengan memanfaatkan opini dan rating pengguna lain.
+    </p>
+    <p class="app-purpose">
+        Tujuan utama aplikasi ini adalah untuk memberikan rekomendasi film yang dipersonalisasi dan akurat berdasarkan kesamaan preferensi antar pengguna, menggunakan metode User Based Collaborative Filtering dengan Cosine Similarity. 
+        <a href="{% url 'login' %}" class="btn user-login-btn">
+            Login Sebagai Pengguna
+        </a>
+        <a href="{% url 'admin_login' %}" class="btn admin-login-btn">
+            Login Sebagai Admin
+        </a>
+    </div>
+</div>
+
+<style>
+    /* Tambahkan atau modifikasi CSS ini di recommender_app/static/css/style.css */
+    .welcome-container {
+        text-align: center;
+        margin-top: 80px;
+        background-color: var(--card-bg);
+        padding: 50px;
+        border-radius: 10px;
+        box-shadow: 0 8px 25px var(--shadow);
+    }
+
+    .welcome-container h1 {
+        color: var(--primary-color);
+        margin-bottom: 25px;
+        font-size: 2.5em;
+    }
+
+    .welcome-container p {
+        font-size: 1.2em;
+        color: var(--dark-gray);
+        margin-bottom: 40px;
+    }
+
+    .app-description, .app-purpose {
+        margin-bottom: 20px;
+        font-size: 1.05em;
+        line-height: 1.7;
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
+        text-align: justify;
+        text-align-last: center; /* Untuk membuat justify terlihat bagus di tengah */
+    }
+
+    .login-options {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        flex-wrap: wrap;
+        margin-top: 50px;
+    }
+
+    .login-options .btn {
+        width: 280px; /* Lebarkan sedikit tombol */
+        padding: 18px 30px;
+        font-size: 1.2em;
+        border-radius: 8px;
+    }
+
+    .user-login-btn {
+        background-color: var(--primary-color);
+    }
+
+    .user-login-btn:hover {
+        background-color: #B20710;
+    }
+
+    .admin-login-btn {
+        background-color: #007BFF; /* Warna biru untuk admin */
+    }
+
+    .admin-login-btn:hover {
+        background-color: #0056b3;
+    }
+</style>
+{% endblock %}

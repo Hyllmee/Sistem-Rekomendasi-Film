@@ -1,0 +1,34 @@
+{% extends 'recommender_app/base.html' %}
+{% load static %}
+
+{% block title %}Rekomendasi Film{% endblock %}
+
+{% block back_button %}
+<div class="back-button-container">
+    <a href="{% url 'home' %}" class="btn back-btn">← Kembali ke Beranda Pengguna</a>
+</div>
+{% endblock %}
+
+{% block content %}
+<h1>Film Rekomendasi untuk Anda</h1>
+<div class="film-grid">
+    {% if recommended_films %}
+        {% for film in recommended_films %}
+        <div class="film-card">
+            {% if film.image %}
+                <img src="{{ film.image.url }}" alt="{{ film.film_name }}">
+            {% else %}
+                <img src="{% static 'img/default_film.png' %}" alt="Default Film Image">
+            {% endif %}
+            <div class="film-card-content">
+                <h3>{{ film.film_name }}</h3>
+                <p>{{ film.description|truncatechars:100 }}</p>
+                <a href="{% url 'detail_film' film.id_film %}" class="btn">Lihat Detail</a>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p>Belum ada rekomendasi yang tersedia saat ini. Silakan beri rating lebih banyak film untuk mendapatkan rekomendasi!</p>
+    {% endif %}
+</div>
+{% endblock %}

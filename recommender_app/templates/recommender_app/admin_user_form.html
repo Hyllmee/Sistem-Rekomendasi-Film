@@ -1,0 +1,21 @@
+{% extends 'recommender_app/admin_base.html' %}
+{% load static %}
+
+{% block title %}{{ action }} User{% endblock %}
+
+{% block admin_content %}
+<form method="post">
+    <h2>{{ action }} User</h2>
+    {% csrf_token %}
+    {% for field in form %}
+        <div class="form-group">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% for error in field.errors %}
+                <p style="color: red; font-size: 0.9em;">{{ error }}</p>
+            {% endfor %}
+        </div>
+    {% endfor %}
+    <button type="submit">{{ action }} User</button>
+</form>
+{% endblock %}

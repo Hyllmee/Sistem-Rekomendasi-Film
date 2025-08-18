@@ -1,0 +1,32 @@
+{% extends 'recommender_app/base.html' %}
+{% load static %}
+
+{% block title %}Daftar Film{% endblock %}
+
+{% block back_button %}
+<div class="back-button-container">
+    <a href="{% url 'home' %}" class="btn back-btn">← Kembali ke Beranda Pengguna</a>
+</div>
+{% endblock %}
+
+{% block content %}
+<h1>Daftar Film</h1>
+<div class="film-grid">
+    {% for film in films %}
+    <div class="film-card">
+        {% if film.image %}
+            <img src="{{ film.image.url }}" alt="{{ film.film_name }}">
+        {% else %}
+            <img src="{% static 'img/default_film.png' %}" alt="Default Film Image">
+        {% endif %}
+        <div class="film-card-content">
+            <h3>{{ film.film_name }}</h3>
+            <p>{{ film.description|truncatechars:100 }}</p>
+            <a href="{% url 'detail_film' film.id_film %}" class="btn">Lihat Detail</a>
+        </div>
+    </div>
+    {% empty %}
+    <p>Belum ada film yang tersedia.</p>
+    {% endfor %}
+</div>
+{% endblock %}

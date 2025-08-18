@@ -1,0 +1,28 @@
+{% extends 'recommender_app/base.html' %} {# Atau admin_base.html jika ingin navbar admin #}
+{% load static %}
+
+{% block title %}Admin Login{% endblock %}
+
+{% block content %}
+<form method="post">
+    <h2>Login Admin</h2>
+    {% csrf_token %}
+    {% if form.errors %}
+        <div class="alert alert-error">
+            Username atau password salah.
+        </div>
+    {% endif %}
+    <div class="form-group">
+        <label for="{{ form.username.id_for_label }}">Username:</label>
+        {{ form.username }}
+    </div>
+    <div class="form-group">
+        <label for="{{ form.password.id_for_label }}">Password:</label>
+        {{ form.password }}
+    </div>
+    <div class="form-actions"> {# Tambahkan div ini untuk menampung tombol #}
+        <button type="submit" class="btn">Login</button>
+        <a href="{% url 'landing_page' %}" class="btn secondary-btn">Kembali</a> {# Tombol Kembali #}
+    </div>
+</form>
+{% endblock %}

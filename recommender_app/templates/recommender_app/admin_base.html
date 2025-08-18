@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Admin - Sistem Rekomendasi Film{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <nav class="admin-nav">
+            <div class="container">
+                <a href="{% url 'admin_dashboard' %}" class="logo">MovieReco Admin</a> {# Logo selalu ke dashboard #}
+                <ul class="admin-nav-links">
+                    {# Hanya tombol keluar yang selalu ada di navbar utama #}
+                    <li><a href="{% url 'admin_logout' %}">Keluar Admin</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        {% block admin_back_button %}{% endblock %} {# <-- BLOK BARU UNTUK TOMBOL KEMBALI #}
+
+        {% block admin_content %}{% endblock %}
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Admin - Sistem Rekomendasi Film. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

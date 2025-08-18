@@ -1,0 +1,22 @@
+{% extends 'recommender_app/admin_base.html' %}
+{% load static %}
+
+{% block content %}
+    <h1>Evaluasi Sistem</h1>
+
+    {% if mae %}
+        <p><strong>MAE:</strong> {{ mae }}</p>
+        <p><strong>RMSE:</strong> {{ rmse }}</p>
+
+        {% if scatter_plot_url %}
+            <h2>Scatter Plot: Rating Prediksi vs Aktual</h2>
+            <img src="{{ scatter_plot_url }}" alt="Scatter Plot">
+        {% else %}
+            <p>Tidak ada data untuk menampilkan scatter plot.</p>
+        {% endif %}
+    {% else %}
+        <p>Sistem belum dapat dievaluasi.</p>
+    {% endif %}
+
+    <a href="{% url 'admin_laporan_rekomendasi' %}" class="btn btn-primary">Generate Laporan Rekomendasi</a>
+{% endblock %}

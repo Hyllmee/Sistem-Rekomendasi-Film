@@ -1,54 +1,95 @@
-import pandas as pd
-import numpy as np
-from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login, logout
-from django.contrib import messages
-from .forms import RegisterForm, LoginForm, EditProfileForm, FilmForm, UserForm, AdminLoginForm # Tambahkan AdminLoginForm
-from .models import User, Film, RatingFilm, Admin
+from django.shortcuts import render
 from django.contrib.admin.views.decorators import staff_member_required
-from django.shortcuts import get_object_or_404
-from django.http import HttpResponse
+import pandas as pd
+from .models import User, Film, RatingFilm
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 from sklearn.metrics.pairwise import cosine_similarity
+import numpy as np
 from io import BytesIO
 from django.db import transaction
 from .forms import RatingForm
 from django.contrib.auth.decorators import login_required
+from django.core.cache import cache  # Import cache
+from scipy.sparse import csr_matrix  # Import sparse matrix
+import time  # Import time untuk mengukur waktu eksekusi
 
-
-# --- Recommendation System Functions (Moved from Colab) ---
+# --- Recommendation System Functions (Optimized) ---
 def get_user_item_matrix():
-    """Mengambil data rating dan membentuk matriks user-item."""
-    ratings_data = [(rating.user.username, rating.film.film_name, rating.film_rating) for rating in RatingFilm.objects.all()]
-    df_ratings = pd.DataFrame(ratings_data, columns=['user__username', 'film__film_name', 'film_rating'])
+    """Mengambil data rating dan membentuk matriks user-item (optimized)."""
+    cache_key = 'user_item_matrix'
+    user_item_matrix = cache.get(cache_key)
 
-    if df_ratings.empty:
-        return pd.DataFrame()
+    if user_item_matrix is None:
+        start_time = time.time()  # Catat waktu mulai
 
-    user_item_matrix = df_ratings.pivot_table(index='user__username', columns='film__film_name', values='film_rating')
+        # Gunakan values_list untuk mengambil data yang dibutuhkan saja
+        ratings_data = RatingFilm.objects.values_list('user__username', 'film__film_name', 'film_rating')
+        df_ratings = pd.DataFrame.from_records(ratings_data, columns=['user__username', 'film__film_name', 'film_rating'])
+
+        if df_ratings.empty:
+            return pd.DataFrame()
+
+        user_item_matrix = df_ratings.pivot_table(index='user__username', columns='film__film_name', values='film_rating')
+
+        # Simpan ke cache selama 24 jam
+        cache.set(cache_key, user_item_matrix, 60 * 60 * 24)
+
+        end_time = time.time()  # Catat waktu selesai
+        print(f"Waktu pembuatan matriks user-item: {end_time - start_time:.2f} detik")
+
     return user_item_matrix
 
 def normalize_ratings(user_item_matrix):
-    """Melakukan normalisasi rating menggunakan mean-centering."""
-    if user_item_matrix.empty:
-        return pd.DataFrame(), pd.Series()
+    """Melakukan normalisasi rating menggunakan mean-centering (optimized)."""
+    cache_key = 'normalized_ratings'
+    normalized_data = cache.get(cache_key)
 
-    user_ratings_mean = user_item_matrix.mean(axis=1)
-    ratings_normalized = user_item_matrix.sub(user_ratings_mean, axis=0)
-    return ratings_normalized, user_ratings_mean
+    if normalized_data is None:
+        start_time = time.time()  # Catat waktu mulai
+
+        if user_item_matrix.empty:
+            return pd.DataFrame(), pd.Series()
+
+        user_ratings_mean = user_item_matrix.mean(axis=1)
+        ratings_normalized = user_item_matrix.sub(user_ratings_mean, axis=0)
+
+        # Simpan ke cache selama 24 jam
+        cache.set(cache_key, (ratings_normalized, user_ratings_mean), 60 * 60 * 24)
+
+        end_time = time.time()  # Catat waktu selesai
+        print(f"Waktu normalisasi rating: {end_time - start_time:.2f} detik")
+
+    return normalized_data
 
 def calculate_cosine_similarity(ratings_normalized):
-    """Menghitung Cosine Similarity antar pengguna."""
-    if ratings_normalized.empty:
-        return pd.DataFrame()
+    """Menghitung Cosine Similarity antar pengguna (optimized)."""
+    cache_key = 'cosine_similarity'
+    user_similarity_df = cache.get(cache_key)
 
-    user_similarity = cosine_similarity(ratings_normalized.fillna(0))
-    user_similarity_df = pd.DataFrame(user_similarity, index=ratings_normalized.index, columns=ratings_normalized.index)
-    np.fill_diagonal(user_similarity_df.values, 0)
+    if user_similarity_df is None:
+        start_time = time.time()  # Catat waktu mulai
+
+        if ratings_normalized.empty:
+            return pd.DataFrame()
+
+        # Ubah matriks menjadi sparse matrix
+        ratings_sparse = csr_matrix(ratings_normalized.fillna(0))
+
+        # Hitung cosine similarity
+        user_similarity = cosine_similarity(ratings_sparse)
+        user_similarity_df = pd.DataFrame(user_similarity, index=ratings_normalized.index, columns=ratings_normalized.index)
+        np.fill_diagonal(user_similarity_df.values, 0)
+
+        # Simpan ke cache selama 24 jam
+        cache.set(cache_key, user_similarity_df, 60 * 60 * 24)
+
+        end_time = time.time()  # Catat waktu selesai
+        print(f"Waktu perhitungan cosine similarity: {end_time - start_time:.2f} detik")
+
     return user_similarity_df
 
 def predict_rating(user_id, film_id, user_item_matrix, user_similarity_df, user_ratings_mean):
-    """Memprediksi rating untuk user_id terhadap film_id."""
+    """Memprediksi rating untuk user_id terhadap film_id (optimized)."""
     try:
         target_user = User.objects.get(id=user_id)
         target_film = Film.objects.get(id_film=film_id)
@@ -100,7 +141,7 @@ def predict_rating(user_id, film_id, user_item_matrix, user_similarity_df, user_
     return max(1, min(5, predicted_rating))
 
 def get_recommendations(user_id, num_recommendations=10):
-    """Memberikan rekomendasi film untuk user_id."""
+    """Memberikan rekomendasi film untuk user_id (optimized)."""
     user_item_matrix = get_user_item_matrix()
     if user_item_matrix.empty:
         return []
@@ -318,7 +359,7 @@ def admin_film_edit(request, film_id):
         form = FilmForm(request.POST, instance=film)
         if form.is_valid():
             form.save()
-            return redirect('admin_daftar_film')
+
     else:
         form = FilmForm(instance=film)
     return render(request, 'recommender_app/admin_film_form.html', {'form': form})
@@ -331,8 +372,14 @@ def admin_film_delete(request, film_id):
         return redirect('admin_daftar_film')
     return render(request, 'recommender_app/admin_confirm_delete.html', {'object': film, 'type': 'film'})
 
+import matplotlib.pyplot as plt
+import base64
+from io import BytesIO
+
 @staff_member_required
 def admin_evaluasi_sistem(request):
+    start_time = time.time()  # Catat waktu mulai
+
     # --- Evaluate System ---
     user_item_matrix = get_user_item_matrix()
     if user_item_matrix.empty:
@@ -347,6 +394,7 @@ def admin_evaluasi_sistem(request):
         actual_ratings = []
         predicted_ratings = []
 
+        # Ambil semua rating dari database
         all_ratings = RatingFilm.objects.all()
 
         for rating in all_ratings:
@@ -392,10 +440,15 @@ def admin_evaluasi_sistem(request):
         'scatter_plot_url': scatter_plot_url,
     }
 
+    end_time = time.time()  # Catat waktu selesai
+    print(f"Waktu evaluasi sistem: {end_time - start_time:.2f} detik")
+
     return render(request, 'recommender_app/admin_evaluasi_sistem.html', context)
 
 @staff_member_required
 def admin_laporan_rekomendasi(request):
+    start_time = time.time()  # Catat waktu mulai
+
     user_item_matrix = get_user_item_matrix()
 
     if user_item_matrix.empty:
@@ -412,6 +465,7 @@ def admin_laporan_rekomendasi(request):
         actual_ratings = []
         predicted_ratings = []
 
+        # Ambil semua rating dari database
         all_ratings = RatingFilm.objects.all()
 
         for rating_obj in all_ratings:
@@ -446,15 +500,20 @@ def admin_laporan_rekomendasi(request):
         'user_similarity_df': user_similarity_df.to_html(),  # Convert DataFrame to HTML
     }
 
+    end_time = time.time()  # Catat waktu selesai
+    print(f"Waktu pembuatan laporan rekomendasi: {end_time - start_time:.2f} detik")
+
     return render(request, 'recommender_app/admin_laporan_rekomendasi.html', context)
 
 @staff_member_required
 def admin_hasil_prediksi(request):
+    start_time = time.time()  # Catat waktu mulai
+
     user_item_matrix = get_user_item_matrix()
 
     if user_item_matrix.empty:
         messages.warning(request, "Tidak ada data rating untuk menghasilkan prediksi.")
-        context = {'prediction_data': None}
+        prediction_data = None
     else:
         ratings_normalized, user_ratings_mean = normalize_ratings(user_item_matrix)
         user_similarity_df = calculate_cosine_similarity(ratings_normalized)
@@ -470,18 +529,22 @@ def admin_hasil_prediksi(request):
                     prediction_data.append({
                         'user_name': user.username,
                         'film_name': film.film_name,
-                        'predicted_rating': round(predicted_rating, 2)
+                        'predicted_rating': predicted_rating
                     })
 
-        if not prediction_data:
-            context = {'prediction_data': None}
-        else:
-            context = {'prediction_data': prediction_data}
+    context = {
+        'prediction_data': prediction_data,
+    }
+
+    end_time = time.time()  # Catat waktu selesai
+    print(f"Waktu pembuatan hasil prediksi: {end_time - start_time:.2f} detik")
 
     return render(request, 'recommender_app/admin_hasil_prediksi.html', context)
 
 @staff_member_required
 def admin_hasil_similarity(request):
+    start_time = time.time()  # Catat waktu mulai
+
     user_item_matrix = get_user_item_matrix()
 
     if user_item_matrix.empty:
@@ -523,5 +586,8 @@ def admin_hasil_similarity(request):
         'prediction_data': prediction_data,
         'similarity_data': similarity_data
     }
+
+    end_time = time.time()  # Catat waktu selesai
+    print(f"Waktu pembuatan hasil similarity: {end_time - start_time:.2f} detik")
 
     return render(request, 'recommender_app/admin_hasil_prediksi_similarity.html', context)
